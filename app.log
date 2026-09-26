@@ -32,3 +32,7 @@ Se hai altre domande o vuoi sapere di più su Roma o l'Italia in generale, non es
 E se vuoi sapere la popolazione della capitale d'Italia, il numero di abitanti a Roma è di circa 2,8 milioni.
 2026-09-19 17:49:14 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
 2026-09-19 17:49:14 - INFO - Metodo: chat | Tempo: 4.02s | Prompt: () | Risposta: It looks like you didn't specify a question or topic. Can you please provide more context or ask a question so I can assist you better? I'll do my best to help.
+2026-09-22 22:34:05 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (Chi ha fondato Roma?) | Risposta: <generator object AIAssistant.chat at 0x000002B73426CD00>
+2026-09-22 22:34:09 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-09-23 21:14:02 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (cosa faresti per calcolare quante palle da calcio stanno dentro ad un aereo di linea?) | Risposta: <generator object AIAssistant.chat at 0x000001F867ACCD00>
+2026-09-23 21:14:06 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
