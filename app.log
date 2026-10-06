@@ -36,3 +36,38 @@ E se vuoi sapere la popolazione della capitale d'Italia, il numero di abitanti a
 2026-09-22 22:34:09 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
 2026-09-23 21:14:02 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (cosa faresti per calcolare quante palle da calcio stanno dentro ad un aereo di linea?) | Risposta: <generator object AIAssistant.chat at 0x000001F867ACCD00>
 2026-09-23 21:14:06 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-05 19:38:43 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (come si chiamano le capitali di:
+- italiana
+- francese
+- germania
+- portogallo
+- svizzera) | Risposta: <generator object AIAssistant.chat at 0x000002215E6A3EF0>
+2026-10-05 19:44:47 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (come si chiamano le capitali di:
+Italia
+Francia
+Germania
+Svizzera) | Risposta: <generator object AIAssistant.chat at 0x00000161A9CA3EF0>
+2026-10-05 19:45:08 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 21:20:22 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (Capitale dell'italia) | Risposta: <generator object AIAssistant.chat at 0x0000022EBCED4040>
+2026-10-06 21:20:26 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:03:28 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (capitale della slovenia) | Risposta: <generator object AIAssistant.chat at 0x0000029565FCC040>
+2026-10-06 22:03:30 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:03:48 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (capitale della groillandia) | Risposta: <generator object AIAssistant.chat at 0x0000029565FCC040>
+2026-10-06 22:03:48 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:04:10 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (capitale della groinlandia) | Risposta: <generator object AIAssistant.chat at 0x0000029567013EF0>
+2026-10-06 22:04:10 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:36:01 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (come stai?
+) | Risposta: <generator object AIAssistant.chat at 0x000001FCF8D40590>
+2026-10-06 22:36:03 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:40:03 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (ciao) | Risposta: <generator object AIAssistant.chat at 0x000001C8B4690480>
+2026-10-06 22:40:07 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:40:28 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (nulla, volevo solo sapere come stessi) | Risposta: <generator object AIAssistant.chat at 0x000001C8B57AC150>
+2026-10-06 22:40:28 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:40:51 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (nulla, volevo solo sapere come stessi tu) | Risposta: <generator object AIAssistant.chat at 0x000001C8B567FDE0>
+2026-10-06 22:40:51 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:42:01 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (Capitale della francia) | Risposta: <generator object AIAssistant.chat at 0x000001C8B567FDE0>
+2026-10-06 22:42:01 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:42:30 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (Capitale della bulgaria) | Risposta: <generator object AIAssistant.chat at 0x000001C8B4690480>
+2026-10-06 22:42:30 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"
+2026-10-06 22:42:33 - INFO - Metodo: chat | Tempo: 0.0s | Prompt: (Capitale della bulgaria) | Risposta: <generator object AIAssistant.chat at 0x000001C8B4690480>
+2026-10-06 22:42:33 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/chat "HTTP/1.1 200 OK"

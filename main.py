@@ -1,4 +1,5 @@
 import customtkinter
+import threading
 
 from src.controllers.AIAssistant import AIAssistant
 
@@ -21,22 +22,66 @@ class LeftSidebar(customtkinter.CTkFrame):
 class RightSidebar(customtkinter.CTkFrame):
     def __init__(self, master):
         # super().__init__ chiama il costruttore della classe padre (CTkFrame)
-        # Qui passiamo le configurazioni che prima erano in Root
         super().__init__(master, corner_radius=0, width=80)
         
-        self.btn_ia_create_prompt = customtkinter.CTkButton(self, text="IA Prompt", corner_radius=0)
+        self.btn_ia_create_prompt = customtkinter.CTkButton(self, text="IA Prompt", corner_radius=0, command = self.ia_crate_prompt_click)
         self.btn_ia_create_prompt.pack(side="top", fill="x", pady=20, padx=20)
         
-        self.btn_ia_create_ticket = customtkinter.CTkButton(self, text="IA Ticket", corner_radius=0)
+        
+        self.btn_ia_create_ticket = customtkinter.CTkButton(self, text="IA Ticket", corner_radius=0, command = self.ia_crate_ticket_click)
         self.btn_ia_create_ticket.pack(side="top", fill="x", pady=20, padx=20)
         
-        self.btn_ia_create_script = customtkinter.CTkButton(self, text="IA Script", corner_radius=0)
+        self.btn_ia_create_script = customtkinter.CTkButton(self, text="IA Script", corner_radius=0, command = self.ia_crate_script_click)
         self.btn_ia_create_script.pack(side="top", fill="x", pady=20, padx=20)
 
+    def ia_crate_prompt_click(self):
+        self.btn_ia_create_prompt.configure(text="⏳ Elaborazione...", state="disabled")
+        threading.Thread(target=self.process_prompt).start()    
+    
+    def process_prompt(self):
+        try:
+            input_text = self.master.main_frame.editor.get("sel.first", "sel.last")
+            response_ia_prompt = "".join(assistant.chat(input_text))
+            self.master.main_frame.ia_output.delete("0.0", "end")
+            self.master.main_frame.ia_output.insert("0.0", response_ia_prompt)
+            self.master.sidebar_right.btn_ia_create_prompt.configure(text="IA Prompt", state="normal")
+        except:
+            self.master.sidebar_right.btn_ia_create_prompt.configure(text="IA Prompt", state="normal")
+            print("Nessun testo selezionato!")
+            
+    def ia_crate_ticket_click(self):
+        self.btn_ia_create_ticket.configure(text="⏳ Elaborazione...", state="disabled")
+        threading.Thread(target=self.process_ticket).start()
+            
+    def process_ticket(self):
+        try:
+            input_text = self.master.main_frame.editor.get("sel.first", "sel.last")
+            response_ia_prompt = "".join(assistant.chat(input_text))
+            self.master.main_frame.ia_output.delete("0.0", "end")
+            self.master.main_frame.ia_output.insert("0.0", response_ia_prompt)
+            self.master.sidebar_right.btn_ia_create_ticket.configure(text="IA Ticket", state="normal")
+        except:
+            self.master.sidebar_right.btn_ia_create_ticket.configure(text="IA Ticket", state="normal")
+            print("Nessun testo selezionato!")
+
+    def ia_crate_script_click(self):
+        self.btn_ia_create_script.configure(text="⏳ Elaborazione...", state="disabled")
+        threading.Thread(target=self.process_script).start()
+            
+    def process_script(self):
+        try:
+            input_text = self.master.main_frame.editor.get("sel.first", "sel.last")
+            response_ia_prompt = "".join(assistant.chat(input_text))
+            self.master.main_frame.ia_output.delete("0.0", "end")
+            self.master.main_frame.ia_output.insert("0.0", response_ia_prompt)
+            self.master.sidebar_right.btn_ia_create_script.configure(text="IA Script", state="normal")
+        except:
+            self.master.sidebar_right.btn_ia_create_script.configure(text="IA Script", state="normal")
+            print("Nessun testo selezionato!")
+            
 class MainFrame(customtkinter.CTkFrame):
     def __init__(self, master):
         # super().__init__ chiama il costruttore della classe padre (CTkFrame)
-        # Qui passiamo le configurazioni che prima erano in Root
         super().__init__(master, corner_radius=0)
         
         self.grid_columnconfigure(0, weight=1)
@@ -73,7 +118,12 @@ class Root(customtkinter.CTk):
         
         self.main_frame = MainFrame(self)
         self.main_frame.grid(row=0, column=1, sticky="nsew")
+        
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    def on_closing(self):
+        self.destroy()
+        
 root = Root()
 root.mainloop()
 
