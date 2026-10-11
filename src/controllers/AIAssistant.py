@@ -1,6 +1,7 @@
 import logging
 import httpx
 import ollama
+import json
 
 from ollama import ResponseError
 from src.utils.logger import time_tracker
@@ -14,17 +15,21 @@ class AIAssistant:
             self.messages = messages
     
     @time_tracker
-    def chat(self, prompt):
+    def chat(self, prompt, task_type=None):
         try: 
-            
+            self.messages.clear()
+            if task_type != None:
+                with open('assets/prompts.json', 'r') as f:
+                    prompts_dict = json.load(f)
+                    prompt_type = prompts_dict[task_type]
+                    self.messages.append({"role": "system", "content": prompt_type})
+                
             self.messages.append({"role": "user", "content": prompt})
-            
             response = ollama.chat(
                 model = self.modello,
                 messages = self.messages,
                 stream = True               # Generatore
             )
-            
             response_text = ""
             
             for chunk in response:
