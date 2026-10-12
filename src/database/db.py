@@ -17,12 +17,15 @@ class Gestore_DB:
         connection.commit()
         connection.close()
     
-    def new_note(self, title, content, created_at, last_modified_at):
+    def new_note(self, title="Nuova nota", content="", created_at="", last_modified_at=""):
         connection = sqlite3.connect("NoteWork.db")
         cursor = connection.cursor()
         cursor.execute("INSERT INTO note (title, content, created_at, last_modified_at) VALUES (?, ?, ?, ?)", (title, content, created_at, last_modified_at))
         connection.commit()
+        
+        note_id = cursor.lastrowid
         connection.close()
+        return note_id
         
     def get_all_notes(self):
         connection = sqlite3.connect("NoteWork.db")
@@ -31,3 +34,18 @@ class Gestore_DB:
         notes = cursor.fetchall()
         connection.close()
         return notes
+    
+    def get_note_by_id(self, search_id):
+        connection = sqlite3.connect("NoteWork.db")
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM note WHERE id = ?", (search_id,))
+        note = cursor.fetchone()
+        connection.close()
+        return note
+    
+    def update_note(self, note_id, title, content, last_modified_at):
+        connection = sqlite3.connect("NoteWork.db")
+        cursor = connection.cursor()
+        cursor.execute("UPDATE note SET title = ?, content = ?, last_modified_at = ? WHERE id = ?", (title, content, last_modified_at, note_id))
+        connection.commit()
+        connection.close()

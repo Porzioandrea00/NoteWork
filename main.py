@@ -2,7 +2,7 @@ import customtkinter
 import threading
 
 from src.controllers.AIAssistant import AIAssistant
-from tkinter import filedialog
+from tkinter import filedialog, TclError
 from src.database.db import Gestore_DB
 
 assistant = AIAssistant('llama3.2')
@@ -15,6 +15,8 @@ class LeftSidebar(customtkinter.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=1)
         
         self.lbl_title = customtkinter.CTkLabel(self, text="Note", corner_radius=0, font=customtkinter.CTkFont(size=16, weight="bold", family="Arial"), text_color="white")
         self.lbl_title.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="w")
@@ -23,7 +25,8 @@ class LeftSidebar(customtkinter.CTkFrame):
         self.btn_new_note.grid(row=0, column=1, padx=(0, 20), pady=20, sticky="e")
         
         self.scrollable_note = customtkinter.CTkScrollableFrame(self)
-        self.scrollable_note.pack(padx=20, pady=20, fill="both", expand=True)
+        
+        self.scrollable_note.grid(row=1, column=0, columnspan=2, padx=20, pady=20, fill="both", sticky="nsew")
         self.all_note()
         
     def all_note(self):
@@ -41,18 +44,17 @@ class LeftSidebar(customtkinter.CTkFrame):
             label.pack(pady=5, padx=10, fill="x", anchor="w")
             
             label.bind("<Button-1>", lambda event, note_id=note[0]: self.master.show_note(note_id))
-            
-    def show_note(self, note_id):
-        note = self.master.db.get_note_by_id(note_id)
-        self.master.main_frame.editor.delete("0.0", "end")
-        self.master.main_frame.editor.insert("0.0", note[2])
-        self.master.main_frame.ia_output.delete("0.0", "end")
     
     def new_note(self):
         self.master.main_frame.editor.delete("0.0", "end")
         self.master.main_frame.ia_output.delete("0.0", "end")
+        self.master.main_frame.toolbar.title.delete(0, "end")
+        self.master.main_frame.toolbar.title.insert(0, "Nuova nota")
         
-        self.master.db.new_note(title = "", content = "", created_at = "", last_modified_at = "")
+        new_id = self.master.db.new_note(title = "Nuova nota", content = "", created_at = "", last_modified_at = "")
+        if new_id:
+            self.master.current_note_id = new_id
+            
         self.all_note()
         
 class RightSidebar(customtkinter.CTkFrame):
@@ -77,13 +79,18 @@ class RightSidebar(customtkinter.CTkFrame):
     def process_prompt(self):
         try:
             input_text = self.master.main_frame.editor.get("sel.first", "sel.last")
-            response_ia_prompt = "".join(assistant.chat(input_text, task_type="prompt"))
-            self.master.main_frame.ia_output.delete("0.0", "end")
-            self.master.main_frame.ia_output.insert("0.0", response_ia_prompt)
-            self.master.sidebar_right.btn_ia_create_prompt.configure(text="IA Prompt", state="normal")
-        except:
+            self.master.after(0, lambda: self.master.main_frame.ia_output.delete("0.0", "end"))
+            
+            for chunk in assistant.chat(input_text, task_type="prompt"):
+                self.master.after(0, lambda c=chunk: self.master.main_frame.ia_output.insert("end", c))
+            
+            self.master.after(0, lambda: self.master.sidebar_right.btn_ia_create_prompt.configure(text="IA Prompt", state="normal"))
+        except TclError:
             self.master.sidebar_right.btn_ia_create_prompt.configure(text="IA Prompt", state="normal")
             print("Nessun testo selezionato!")
+        except Exception as e:
+            self.master.sidebar_right.btn_ia_create_prompt.configure(text="IA Prompt", state="normal")
+            print(f"Errore imprevisto: {e}")
             
     def ia_crate_ticket_click(self):
         self.btn_ia_create_ticket.configure(text="⏳ Elaborazione...", state="disabled")
@@ -92,13 +99,18 @@ class RightSidebar(customtkinter.CTkFrame):
     def process_ticket(self):
         try:
             input_text = self.master.main_frame.editor.get("sel.first", "sel.last")
-            response_ia_prompt = "".join(assistant.chat(input_text, task_type="ticket"))
-            self.master.main_frame.ia_output.delete("0.0", "end")
-            self.master.main_frame.ia_output.insert("0.0", response_ia_prompt)
-            self.master.sidebar_right.btn_ia_create_ticket.configure(text="IA Ticket", state="normal")
-        except:
+            self.master.after(0, lambda: self.master.main_frame.ia_output.delete("0.0", "end"))
+            
+            for chunk in assistant.chat(input_text, task_type="ticket"):
+                self.master.after(0, lambda c=chunk: self.master.main_frame.ia_output.insert("end", c))
+            
+            self.master.after(0, lambda: self.master.sidebar_right.btn_ia_create_ticket.configure(text="IA Ticket", state="normal"))
+        except TclError:
             self.master.sidebar_right.btn_ia_create_ticket.configure(text="IA Ticket", state="normal")
             print("Nessun testo selezionato!")
+        except Exception as e:
+            self.master.sidebar_right.btn_ia_create_ticket.configure(text="IA Ticket", state="normal")
+            print(f"Errore imprevisto: {e}")
 
     def ia_crate_script_click(self):
         self.btn_ia_create_script.configure(text="⏳ Elaborazione...", state="disabled")
@@ -107,13 +119,18 @@ class RightSidebar(customtkinter.CTkFrame):
     def process_script(self):
         try:
             input_text = self.master.main_frame.editor.get("sel.first", "sel.last")
-            response_ia_prompt = "".join(assistant.chat(input_text, task_type="script"))
-            self.master.main_frame.ia_output.delete("0.0", "end")
-            self.master.main_frame.ia_output.insert("0.0", response_ia_prompt)
-            self.master.sidebar_right.btn_ia_create_script.configure(text="IA Script", state="normal")
-        except:
+            self.master.after(0, lambda: self.master.main_frame.ia_output.delete("0.0", "end"))
+            
+            for chunk in assistant.chat(input_text, task_type="script"):
+                self.master.after(0, lambda c=chunk: self.master.main_frame.ia_output.insert("end", c))
+            
+            self.master.after(0, lambda: self.master.sidebar_right.btn_ia_create_script.configure(text="IA Script", state="normal"))
+        except TclError:
             self.master.sidebar_right.btn_ia_create_script.configure(text="IA Script", state="normal")
             print("Nessun testo selezionato!")
+        except Exception as e:
+            self.master.sidebar_right.btn_ia_create_script.configure(text="IA Script", state="normal")
+            print(f"Errore imprevisto: {e}")
             
 class MainFrame(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -129,9 +146,17 @@ class MainFrame(customtkinter.CTkFrame):
         self.toolbar.grid(row=0, column=0, sticky="nsew")
         
         self.toolbar.grid_columnconfigure(0, weight=1)
+        self.toolbar.grid_columnconfigure(1, weight=1)
+        self.toolbar.grid_columnconfigure(2, weight=1)
+        
+        self.toolbar.title = customtkinter.CTkEntry(self.toolbar, corner_radius=0)
+        self.toolbar.title.grid(row=0, column=0, sticky="nsew")
+        
+        self.toolbar.btn_save_note = customtkinter.CTkButton(self.toolbar, text="save", corner_radius=0, command = self.master.save_note)
+        self.toolbar.btn_save_note.grid(row=0, column=1, sticky="nsew")
         
         self.toolbar.btn_export = customtkinter.CTkButton(self.toolbar, text="export", corner_radius=0, command = self.ia_export)
-        self.toolbar.btn_export.grid(row=0, column=0, sticky="nsew")
+        self.toolbar.btn_export.grid(row=0, column=2, sticky="nsew")
                  
         self.editor = customtkinter.CTkTextbox(self, corner_radius=0)
         self.editor.grid(row=1, column=0, sticky="nsew")
@@ -142,13 +167,15 @@ class MainFrame(customtkinter.CTkFrame):
     def ia_export(self):
         self.ia_output.get("0.0", "end")
         export_file = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
-        with open(export_file, "w", encoding="utf-8") as f:
-            f.write(self.ia_output.get("0.0", "end"))
+        if export_file:
+            with open(export_file, "w", encoding="utf-8") as f:
+                f.write(self.ia_output.get("0.0", "end"))
 
 class Root(customtkinter.CTk):
     def __init__(self):
         super().__init__()
         self.db = Gestore_DB()
+        self.current_note_id = None
         
         self.geometry("1600x900")
         self.state("zoomed")
@@ -169,7 +196,27 @@ class Root(customtkinter.CTk):
         
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         
-
+        
+    def show_note(self, note_id):
+        self.current_note_id = note_id
+        note = self.db.get_note_by_id(note_id)
+        self.main_frame.toolbar.title.delete(0, "end")
+        self.main_frame.toolbar.title.insert(0, note[1])
+        self.main_frame.editor.delete("0.0", "end")
+        self.main_frame.editor.insert("0.0", note[2])
+        self.main_frame.ia_output.delete("0.0", "end")
+        
+    def save_note(self):
+        if self.current_note_id is not None:
+            title = self.main_frame.toolbar.title.get()
+            content = self.main_frame.editor.get("0.0", "end-1c")
+            
+            import datetime
+            last_modified_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+            self.db.update_note(self.current_note_id, title, content, last_modified_at)
+            self.sidebar_left.all_note()
+    
     def on_closing(self):
         self.destroy()
         

@@ -4,7 +4,6 @@ import ollama
 import json
 
 from ollama import ResponseError
-from src.utils.logger import time_tracker
 
 class AIAssistant:
     def __init__(self, modello, messages = None):
@@ -14,12 +13,11 @@ class AIAssistant:
         else:
             self.messages = messages
     
-    @time_tracker
     def chat(self, prompt, task_type=None):
         try: 
             self.messages.clear()
             if task_type != None:
-                with open('assets/prompts.json', 'r') as f:
+                with open('assets/prompts.json', 'r', encoding="utf-8") as f:
                     prompts_dict = json.load(f)
                     prompt_type = prompts_dict[task_type]
                     self.messages.append({"role": "system", "content": prompt_type})
@@ -46,7 +44,7 @@ class AIAssistant:
             if e.status_code == 404:
                 logging.error(f"Modello non trovato: {e.error}")
                 print("Modello non trovato. Tentativo di download in corso...")
-                ollama.download_model(self.modello)
+                ollama.pull(self.modello)
                 response_text = "Modello non trovato."
                 yield response_text
         
