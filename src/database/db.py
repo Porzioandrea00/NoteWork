@@ -49,3 +49,10 @@ class Gestore_DB:
         cursor.execute("UPDATE note SET title = ?, content = ?, last_modified_at = ? WHERE id = ?", (title, content, last_modified_at, note_id))
         connection.commit()
         connection.close()
+        
+    def delete_note(self, note_id):
+        connection = sqlite3.connect("NoteWork.db")
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM note WHERE id = ?", (note_id,))
+        connection.commit()
+        connection.close()
