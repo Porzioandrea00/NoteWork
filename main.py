@@ -56,7 +56,7 @@ class LeftSidebar(customtkinter.CTkFrame):
         self.master.main_frame.toolbar.title.delete(0, "end")
         self.master.main_frame.toolbar.title.insert(0, "Nuova nota")
         
-        new_id = self.master.db.new_note(title = "Nuova nota", content = "", created_at = "", last_modified_at = "")
+        new_id = self.master.db.new_note(title = "Nuova nota", content = "", created_at = "", last_modified_at = "", ia_output = "")
         if new_id:
             self.master.current_note_id = new_id
             
@@ -225,6 +225,13 @@ class MainFrame(customtkinter.CTkFrame):
         self.ia_output.configure(state="normal")
         self.ia_output.delete("0.0", "end")
         self.ia_output.configure(state="disabled")
+        
+    def load_ia_output(self, text):
+        self.ia_output.configure(state="normal")
+        self.ia_output.delete("0.0", "end")
+        if text:
+            self.ia_output.insert("end", text)
+        self.ia_output.configure(state="disabled")
 
 class Root(customtkinter.CTk):
     def __init__(self):
@@ -259,17 +266,18 @@ class Root(customtkinter.CTk):
         self.main_frame.toolbar.title.insert(0, note[1])
         self.main_frame.editor.delete("0.0", "end")
         self.main_frame.editor.insert("0.0", note[2])
-        self.main_frame.clear_ia_output()
+        self.main_frame.load_ia_output(note[5])
         
     def save_note(self):
         if self.current_note_id is not None:
             title = self.main_frame.toolbar.title.get()
             content = self.main_frame.editor.get("0.0", "end-1c")
+            ia_output = self.main_frame.ia_output.get("0.0", "end-1c")
             
             import datetime
             last_modified_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-            self.db.update_note(self.current_note_id, title, content, last_modified_at)
+            self.db.update_note(self.current_note_id, title, content, last_modified_at, ia_output)
             self.sidebar_left.all_note()
     
     def on_closing(self):
