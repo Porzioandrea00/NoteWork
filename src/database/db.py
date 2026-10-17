@@ -1,8 +1,13 @@
 import sqlite3
 
+from pathlib import Path
+
 class Gestore_DB:
     def __init__(self):
-        connection = sqlite3.connect("NoteWork.db")
+        BASE_DIR = Path(__file__).resolve().parent.parent.parent
+        self.db_path = BASE_DIR / "NoteWork.db"
+        
+        connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS note (
@@ -18,10 +23,10 @@ class Gestore_DB:
         connection.commit()
         connection.close()
     
-    def new_note(self, title="Nuova nota", content="", created_at="", last_modified_at="", ia_output=""):
-        connection = sqlite3.connect("NoteWork.db")
+    def new_note(self, title="Nuova nota", content="", last_modified_at="", ia_output=""):
+        connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO note (title, content, created_at, last_modified_at, ia_output) VALUES (?, ?, ?, ?, ?)", (title, content, created_at, last_modified_at, ia_output))
+        cursor.execute("INSERT INTO note (title, content, last_modified_at, ia_output) VALUES (?, ?, ?, ?)", (title, content, last_modified_at, ia_output))
         connection.commit()
         
         note_id = cursor.lastrowid
@@ -29,7 +34,7 @@ class Gestore_DB:
         return note_id
         
     def get_all_notes(self):
-        connection = sqlite3.connect("NoteWork.db")
+        connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM note")
         notes = cursor.fetchall()
@@ -37,7 +42,7 @@ class Gestore_DB:
         return notes
     
     def get_note_by_id(self, search_id):
-        connection = sqlite3.connect("NoteWork.db")
+        connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
         cursor.execute("SELECT id, title, content, created_at, last_modified_at, ia_output FROM note WHERE id = ?", (search_id,))
         note = cursor.fetchone()
@@ -45,14 +50,14 @@ class Gestore_DB:
         return note
     
     def update_note(self, note_id, title, content, last_modified_at, ia_output):
-        connection = sqlite3.connect("NoteWork.db")
+        connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
         cursor.execute("UPDATE note SET title = ?, content = ?, last_modified_at = ?, ia_output = ? WHERE id = ?", (title, content, last_modified_at, ia_output, note_id))
         connection.commit()
         connection.close()
         
     def delete_note(self, note_id):
-        connection = sqlite3.connect("NoteWork.db")
+        connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
         cursor.execute("DELETE FROM note WHERE id = ?", (note_id,))
         connection.commit()
