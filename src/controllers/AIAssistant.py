@@ -47,6 +47,10 @@ class AIAssistant:
           content = chunk.get("message", {}).get("content", "")
           response_text += content
           yield content
+      except (ResponseError, httpx.ConnectError, httpx.TimeoutException):
+        # Con stream=True la richiesta a Ollama parte solo qui, quindi anche
+        # i suoi errori arrivano qui: li gestiscono gli except più sotto
+        raise
       except Exception as stream_err:
         logging.error(f"Errore durante lo streaming dei chunk: {stream_err}")
         yield "\n[Errore: Connessione interrotta durante la generazione]"
@@ -82,7 +86,7 @@ class AIAssistant:
         logging.error(f"Errore Ollama [{e.status_code}]: {e.error}")
         yield f"Errore del server Ollama: {e.error}"
 
-    except ConnectionError:
+    except (ConnectionError, httpx.ConnectError):
       logging.error("Impossibile connettersi al server di Ollama.")
       yield "Impossibile connettersi al server di Ollama. Assicurati che sia avviato."
       if self.messages:
