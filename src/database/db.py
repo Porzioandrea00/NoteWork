@@ -3,9 +3,10 @@ import sqlite3
 from pathlib import Path
 
 class Gestore_DB:
-    def __init__(self):
+    def __init__(self, db_path=None):
         BASE_DIR = Path(__file__).resolve().parent.parent.parent
-        self.db_path = BASE_DIR / "NoteWork.db"
+        # db_path permette ai test di usare un database temporaneo
+        self.db_path = Path(db_path) if db_path else BASE_DIR / "NoteWork.db"
         
         connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
