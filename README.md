@@ -1,8 +1,19 @@
 # NoteWork
 
+![Python 3.13](https://img.shields.io/badge/python-3.13-blue)
+![Licenza MIT](https://img.shields.io/badge/licenza-MIT-green)
+![Test con pytest](https://img.shields.io/badge/test-pytest-orange)
+
 Applicazione desktop per prendere appunti di lavoro, con un assistente IA locale che trasforma il testo selezionato in un ticket di sviluppo, in un prompt per generare immagini di interfacce o in uno script Python.
 
 L'interfaccia è realizzata con **CustomTkinter**, le note sono salvate in un database **SQLite** locale e l'IA gira in locale tramite **Ollama** (modello predefinito: `llama3.2`). Nessun testo viene inviato a servizi esterni.
+
+## Screenshot
+
+<!-- Aggiungi le immagini nella cartella docs/ con questi nomi: screenshot.png e demo.gif -->
+![NoteWork: elenco delle note, editor e risposta dell'IA](docs/screenshot.png)
+
+![Demo: dal testo selezionato al ticket generato dall'IA](docs/demo.gif)
 
 ## Funzionalità
 
@@ -39,7 +50,7 @@ ollama pull llama3.2
 python main.py
 ```
 
-Avvia l'app dalla cartella principale del progetto: i percorsi di `NoteWork.db` e `assets/prompts.json` sono relativi alla cartella corrente. Al primo avvio il database viene creato automaticamente.
+I percorsi di `NoteWork.db`, `app.log` e `assets/prompts.json` sono calcolati a partire dalla cartella del progetto, quindi l'app si può avviare anche da un'altra cartella (ad esempio `python NoteWork/main.py`). Al primo avvio il database viene creato automaticamente.
 
 ## Come si usa
 
@@ -56,8 +67,12 @@ Avvia l'app dalla cartella principale del progetto: i percorsi di `NoteWork.db` 
 NoteWork/
 ├── main.py                    # Interfaccia grafica (CustomTkinter) e avvio dell'app
 ├── requirements.txt           # Dipendenze Python (customtkinter, ollama, httpx)
+├── requirements-dev.txt       # Dipendenze per i test (pytest)
+├── pytest.ini                 # Configurazione di pytest
+├── LICENSE                    # Licenza MIT
 ├── assets/
 │   └── prompts.json           # Prompt di sistema per IA Prompt, IA Ticket e IA Script
+├── docs/                      # Screenshot e GIF usati nel README
 ├── src/
 │   ├── controllers/
 │   │   └── AIAssistant.py     # Chiamate a Ollama in streaming e gestione degli errori
@@ -65,7 +80,14 @@ NoteWork/
 │   │   └── db.py              # Gestore_DB: creazione, lettura, modifica ed eliminazione delle note
 │   └── utils/
 │       └── logger.py          # Configurazione del log su app.log e decoratore time_tracker
-└── NoteWork.db                # Database SQLite delle note
+├── tests/
+│   ├── conftest.py            # Database temporaneo e Ollama simulato per i test
+│   ├── test_ai_assistant.py   # Test dell'assistente IA
+│   ├── test_db.py             # Test del database
+│   ├── test_logger.py         # Test del decoratore time_tracker
+│   └── test_prompts.py        # Test di assets/prompts.json
+├── NoteWork.db                # Database SQLite delle note (creato al primo avvio)
+└── app.log                    # Log dell'applicazione (creato al primo avvio)
 ```
 
 ## Personalizzazione
@@ -88,10 +110,32 @@ Le note sono salvate nella tabella `note` di `NoteWork.db`:
 
 ## Gestione degli errori
 
-- **Ollama non raggiungibile**: nel pannello compare "Impossibile connettersi al server di Ollama." Avvia Ollama e riprova.
-- **Modello non installato**: l'app tenta di avvisare o scaricare il modello. Se non presente, l'errore viene mostrato nel pannello IA.
-- **Timeout**: compare "Il modello ha impiegato troppo tempo a rispondere".
+- **Ollama non raggiungibile**: nel pannello compare "Impossibile connettersi al server di Ollama. Assicurati che sia avviato."
+- **Modello non installato**: l'app scarica il modello con `ollama pull` (circa 2 GB per `llama3.2`, può richiedere qualche minuto) e poi chiede di ripetere la richiesta. Se il download non riesce compare "Modello non trovato e download fallito."
+- **Timeout**: compare "Il modello ha impiegato troppo tempo a rispondere."
+- **Testo troppo lungo per il modello**: compare "La conversazione è troppo lunga per la memoria del modello. La cronologia è stata resettata."
+- **Connessione interrotta mentre arriva la risposta**: il testo già ricevuto resta nel pannello, seguito da "[Errore: Connessione interrotta durante la generazione]".
 - **Nessun testo selezionato**: in console viene segnalato l'errore e i pulsanti vengono riabilitati senza blocchi.
+
+Con lo streaming attivo la libreria `ollama` segnala gli errori solo mentre arriva la risposta: `AIAssistant.chat` li intercetta in quel punto e mostra per ciascuno il messaggio corrispondente.
+
+## Test
+
+I test usano **pytest** e non richiedono né Ollama né l'interfaccia grafica: le chiamate a Ollama sono simulate e il database è un file temporaneo, quindi non toccano le tue note né `app.log`.
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+| File                         | Cosa verifica                                                                                          |
+|------------------------------|--------------------------------------------------------------------------------------------------------|
+| `tests/test_db.py`           | Creazione della tabella; inserimento, lettura, modifica ed eliminazione delle note; data di creazione |
+| `tests/test_ai_assistant.py` | Risposta in streaming, prompt di sistema di IA Prompt, IA Ticket e IA Script, cronologia, ogni errore di Ollama elencato sopra |
+| `tests/test_prompts.py`      | `assets/prompts.json` contiene i tre prompt e nessuno è vuoto                                          |
+| `tests/test_logger.py`       | Il decoratore `time_tracker` restituisce il risultato e registra metodo, prompt e risposta            |
+
+L'interfaccia grafica (`main.py`) non è coperta dai test.
 
 ## Note
 
@@ -105,3 +149,8 @@ Le note sono salvate nella tabella `note` di `NoteWork.db`:
 - CustomTkinter
 - SQLite (`sqlite3`)
 - Ollama (`llama3.2`)
+- pytest
+
+## Licenza
+
+Distribuito con licenza MIT: vedi il file [LICENSE](LICENSE).
